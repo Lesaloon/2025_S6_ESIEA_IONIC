@@ -1,0 +1,7 @@
+{
+  "name": "2025_S6_ESIEA_IONIC",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
