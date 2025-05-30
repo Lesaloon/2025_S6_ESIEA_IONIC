@@ -63,12 +63,6 @@ export class HttpClientService {
 
   handleError(data: any) {
     console.error(data);
-    if (
-      data.error.name == 'InvalidTokenError' ||
-      data.error.name == 'TokenExpiredError'
-    ) {
-      this.authservice.logout();
-    }
     return [];
   }
 }
