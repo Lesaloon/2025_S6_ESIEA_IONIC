@@ -1,13 +1,21 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>profile</ion-title>
+    <ion-title>Mon Profil</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">Déconnexion</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">profile</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ user?.pseudo }}</ion-card-title>
+      <ion-card-subtitle>{{ user?.email }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      Statut : <strong>{{ user?.status }}</strong><br>
+      Créé le : {{ user?.createAt | date:'shortDate' }}
+    </ion-card-content>
+  </ion-card>
 </ion-content>
