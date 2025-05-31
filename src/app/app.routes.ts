@@ -6,6 +6,7 @@ import { ProfilePage } from './pages/profile/profile.page';
 import { LoginPage } from './pages/login/login.page';
 import { AuthGuard } from './guards/auth-guard.guard';
 import { PlacePage } from './pages/place/place.page';
+import { LogoutPage } from './pages/logout/logout.page';
 
 export const routes: Routes = [
   { path: 'login', component: LoginPage },
@@ -30,5 +31,6 @@ export const routes: Routes = [
     ],
   },
   { path: 'place/:id', component: PlacePage },
+  { path: 'logout', component: LogoutPage },
   { path: '**', redirectTo: 'tabs/map' },
 ];

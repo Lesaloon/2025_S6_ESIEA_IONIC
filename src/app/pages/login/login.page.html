@@ -34,4 +34,11 @@
   <ion-text color="danger" *ngIf="error">
     <p class="ion-padding-top">{{ error }}</p>
   </ion-text>
+
+  <ion-toast
+    *ngIf="showToast"
+    [message]="toastMsg"
+    duration="3000"
+    (didDismiss)="showToast = false">
+  </ion-toast>
 </ion-content>

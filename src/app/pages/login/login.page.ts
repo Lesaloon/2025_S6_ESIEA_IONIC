@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import {
   IonHeader,
   IonButton,
@@ -19,6 +19,7 @@ import {
   IonText,
   IonToolbar,
   IonTitle,
+  IonToast,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 
@@ -41,21 +42,33 @@ import { CommonModule } from '@angular/common';
     IonNote,
     ReactiveFormsModule,
     CommonModule,
+    IonToast,
   ],
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
   loginForm: FormGroup;
   error: string | null = null;
+  showToast: boolean = false;
+  toastMsg: string = '';
 
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
+  }
+
+  ngOnInit() {
+    const expired = this.route.snapshot.queryParamMap.get('expired');
+    if (expired === 'true') {
+      this.toastMsg = 'Session expirée';
+      this.showToast = true;
+    }
   }
 
   get email() {

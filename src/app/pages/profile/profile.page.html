@@ -1,21 +1,54 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Mon Profil</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="logout()">Déconnexion</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+	<ion-toolbar>
+		<ion-title>Mon Profil</ion-title>
+		<ion-buttons slot="end">
+			<ion-button *ngIf="!editMode" (click)="toggleEdit()">Modifier</ion-button>
+			<ion-button (click)="logout()">Déconnexion</ion-button>
+		</ion-buttons>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>{{ user?.pseudo }}</ion-card-title>
-      <ion-card-subtitle>{{ user?.email }}</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      Statut : <strong>{{ user?.status }}</strong><br>
-      Créé le : {{ user?.createAt | date:'shortDate' }}
-    </ion-card-content>
-  </ion-card>
+	<ng-container *ngIf="editMode; else viewMode">
+		<ion-card>
+			<ion-card-header>
+				<ion-card-title>Modifier le profil</ion-card-title>
+			</ion-card-header>
+			<ion-card-content>
+				<ion-item>
+					<ion-label position="stacked">Pseudo</ion-label>
+					<ion-input name="pseudo" [(ngModel)]="editUser.pseudo" [ngModelOptions]="{standalone: true}"
+						ngDefaultControl>
+					</ion-input>
+				</ion-item>
+				<ion-item>
+					<ion-label position="stacked">Email</ion-label>
+					<ion-input name="email" type="email" [(ngModel)]="editUser.email"
+						[ngModelOptions]="{standalone: true}" ngDefaultControl>
+					</ion-input>
+				</ion-item>
+				<ion-item>
+					<ion-label position="stacked">Mot de passe</ion-label>
+					<ion-input name="password" type="password" [(ngModel)]="editUser.password"
+						placeholder="Nouveau mot de passe (laisser vide pour conserver)"
+						[ngModelOptions]="{standalone: true}" ngDefaultControl>
+					</ion-input>
+				</ion-item>
+				<ion-button expand="full" (click)="updateProfile()">Enregistrer</ion-button>
+				<ion-button expand="full" color="light" (click)="toggleEdit()">Annuler</ion-button>
+			</ion-card-content>
+		</ion-card>
+	</ng-container>
+	<ng-template #viewMode>
+		<ion-card>
+			<ion-card-header>
+				<ion-card-title>{{ user?.pseudo }}</ion-card-title>
+				<ion-card-subtitle>{{ user?.email }}</ion-card-subtitle>
+			</ion-card-header>
+			<ion-card-content>
+				Statut : <strong>{{ user?.status }}</strong><br>
+				Créé le : {{ user?.createAt | date:'shortDate' }}
+			</ion-card-content>
+		</ion-card>
+	</ng-template>
 </ion-content>
