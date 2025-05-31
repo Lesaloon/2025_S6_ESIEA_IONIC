@@ -6,22 +6,22 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class PlaceService {
-  private baseUrl = 'http://localhost:8000/api/places'; // Adjust if needed
+  private baseUrl = 'http://localhost:8000/api'; // Adjust if needed
 
   constructor(private http: HttpClient) {}
 
   /**
-   * Get all validated places
+   * Get all places
    */
-  getValidatedPlaces(): Observable<Place[]> {
-    return this.http.get<Place[]>(`${this.baseUrl}/validated`);
+  getPlaces(): Observable<Place[]> {
+    return this.http.get<Place[]>(`${this.baseUrl}/places`);
   }
 
   /**
    * Get a place by ID
    */
   getPlace(id: number): Observable<Place> {
-    return this.http.get<Place>(`${this.baseUrl}/${id}`);
+    return this.http.get<Place>(`${this.baseUrl}/places/${id}`);
   }
 
   /**
@@ -32,16 +32,9 @@ export class PlaceService {
   }
 
   /**
-   * Update a place
+   * Add a review to a place
    */
-  updatePlace(id: number, payload: Partial<PlacePayload>): Observable<Place> {
-    return this.http.put<Place>(`${this.baseUrl}/${id}`, payload);
-  }
-
-  /**
-   * Delete a place
-   */
-  deletePlace(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  addReview(placeId: number, review: { rating: number; comment: string }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/places/${placeId}/reviews`, review);
   }
 }

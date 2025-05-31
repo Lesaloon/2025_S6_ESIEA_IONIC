@@ -1,0 +1,62 @@
+<ion-header>
+	<ion-toolbar>
+		<ion-buttons slot="start">
+			<ion-back-button defaultHref="/tabs/list"></ion-back-button>
+		</ion-buttons>
+		<ion-title>Détail du Lieu</ion-title>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+	<ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+
+	<ion-card *ngIf="!isLoading && place">
+		<ion-card-header>
+			<ion-card-title>{{ place.name }}</ion-card-title>
+			<ion-card-subtitle>{{ place.type }}</ion-card-subtitle>
+		</ion-card-header>
+		<ion-card-content>
+			Adresse: {{ place.adresse }}<br>
+			Note moyenne: {{ computedAverageRating ? (computedAverageRating + '/5') : 'N/A' }}
+		</ion-card-content>
+	</ion-card>
+
+	<!-- Review Form -->
+	<ion-card *ngIf="!isLoading && place">
+		<ion-card-header>
+			<ion-card-title>Écrire un avis</ion-card-title>
+		</ion-card-header>
+		<ion-card-content>
+			<ion-item>
+				<ion-label position="stacked">Note (1-5)</ion-label>
+				<ion-input type="number" [(ngModel)]="reviewRating" min="1" max="5"></ion-input>
+			</ion-item>
+			<ion-item>
+				<ion-label position="stacked">Commentaire</ion-label>
+				<ion-textarea [(ngModel)]="reviewComment"></ion-textarea>
+			</ion-item>
+			<ion-button expand="full" (click)="submitReview()">Soumettre l'avis</ion-button>
+		</ion-card-content>
+	</ion-card>
+
+	<!-- Reviews List -->
+	<ion-list *ngIf="reviews && reviews.length > 0">
+		<ion-list-header>
+			Avis
+		</ion-list-header>
+		<ion-item *ngFor="let review of reviews">
+			<ion-label>
+				<p>Note: {{ review.rating }}/5</p>
+				<p>{{ review.commentaire }}</p>
+				<p class="ion-text-muted" *ngIf="review.createAt">Le {{ review.createAt | date:'short' }}</p>
+			</ion-label>
+		</ion-item>
+	</ion-list>
+
+	<ion-toast *ngIf="showToast" [message]="toastMsg" duration="2000" (didDismiss)="showToast = false">
+	</ion-toast>
+
+	<ion-text *ngIf="!isLoading && !place">
+		Aucune information disponible.
+	</ion-text>
+</ion-content>

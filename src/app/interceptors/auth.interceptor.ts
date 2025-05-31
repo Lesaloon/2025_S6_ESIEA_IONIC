@@ -1,20 +1,38 @@
 import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {
+  HttpInterceptor,
+  HttpRequest,
+  HttpHandler,
+  HttpEvent,
+} from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private authService: AuthService) {}
+    constructor(
+		private authService: AuthService
+	) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = this.authService.getToken();
+	// if the request is going for login, no need to attach token
+	if (req.url.includes('/api/login')) {
+	  return next.handle(req);
+	}
 
-    if (token) {
-      const cloned = req.clone({
-        setHeaders: { Authorization: `Bearer ${token}` }
+	// also we only want to attach token if the request is going to our own API
+	// WARNING: THIS WILL NEED TO CHANGE ONCE I HAVE THE ENV CONFIG SETUP
+	if (!req.url.includes('/api')) {
+	  return next.handle(req);
+	}
+    const authToken = this.authService.getToken();
+	console.log('AuthInterceptor: Intercepting request', req.url, 'with token:', authToken || 'none');
+
+    if(authToken) {
+      const clonedReq = req.clone({
+        headers: req.headers.set('Authorization', `Bearer ${authToken}`),
       });
-      return next.handle(cloned);
+      return next.handle(clonedReq);
     }
 
     return next.handle(req);

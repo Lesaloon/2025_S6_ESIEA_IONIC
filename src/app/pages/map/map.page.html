@@ -1,11 +1,14 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Carte des Lieux</ion-title>
-  </ion-toolbar>
+	<ion-toolbar>
+		<ion-title>Carte des Lieux</ion-title>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <google-map [center]="center" [zoom]="zoom" height="100%" width="100%">
-	
-  </google-map>
+	@if (isLoading) {
+	<ion-spinner name="crescent" class="ion-padding"></ion-spinner>
+	} @else {
+	<google-map [center]="center" [zoom]="zoom" height="100%" width="100%">
+	</google-map>
+	}
 </ion-content>

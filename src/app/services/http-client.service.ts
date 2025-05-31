@@ -8,57 +8,35 @@ import { map, Observable } from 'rxjs';
 })
 export class HttpClientService {
   constructor(private http: HttpClient) {}
-  static URL = 'http://localhost:3000/api/';
+  static URL = 'http://localhost:8000/api';
+  header = {};
+
   get<T>(url: string): Observable<T | T[]> {
-    return this.http.get(HttpClientService.URL + url).pipe(
-      map((response: Object) => {
-        const apiResponse = response as ApiResponse<T>;
-        if (apiResponse.success) {
-          return apiResponse.payload;
-        } else {
-          return this.handleError(response);
-        }
-      })
-    );
+    if (!url.startsWith('/')) {
+      url += '/'; // Ensure URL ends with a slash
+    }
+    return this.http.get<T | T[]>(HttpClientService.URL + url, { headers: this.header })
   }
 
   post<T>(url: string, data: any): Observable<T | T[]> {
-    return this.http.post(HttpClientService.URL + url, data).pipe(
-      map((response: Object) => {
-        const apiResponse = response as ApiResponse<T>;
-        if (apiResponse.success) {
-          return apiResponse.payload;
-        } else {
-          return this.handleError(response);
-        }
-      })
-    );
+    if (!url.startsWith('/')) {
+      url += '/'; // Ensure URL starts with a slash
+    }
+    return this.http.post<T | T[]>(HttpClientService.URL + url, data, { headers: this.header })
   }
 
   put<T>(url: string, data: any): Observable<T | T[]> {
-    return this.http.put(HttpClientService.URL + url, data).pipe(
-      map((response: Object) => {
-        const apiResponse = response as ApiResponse<T>;
-        if (apiResponse.success) {
-          return apiResponse.payload;
-        } else {
-          return this.handleError(response);
-        }
-      })
-    );
+    if (!url.startsWith('/')) {
+      url += '/'; // Ensure URL starts with a slash
+    }
+    return this.http.put<T | T[]> (HttpClientService.URL + url, data, { headers: this.header })
   }
 
   delete<T>(url: string): Observable<T | T[]> {
-    return this.http.delete(HttpClientService.URL + url).pipe(
-      map((response: Object) => {
-        const apiResponse = response as ApiResponse<T>;
-        if (apiResponse.success) {
-          return apiResponse.payload;
-        } else {
-          return this.handleError(response);
-        }
-      })
-    );
+    if (!url.startsWith('/')) {
+      url += '/'; // Ensure URL starts with a slash
+    }
+    return this.http.delete<T | T[]> (HttpClientService.URL + url, { headers: this.header })
   }
 
   handleError(data: any) {

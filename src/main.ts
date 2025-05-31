@@ -12,22 +12,27 @@ import {
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
-import { HTTP_INTERCEPTORS, provideHttpClient } from '@angular/common/http';
+import {
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { AuthInterceptor } from './app/interceptors/auth.interceptor';
-import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-
 bootstrapApplication(AppComponent, {
   providers: [
     {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor, // Assuming you have an AuthInterceptor for JWT
-      multi: true,
+      provide: RouteReuseStrategy,
+      useClass: IonicRouteStrategy,
     },
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    provideHttpClient(),
+    provideHttpClient(withInterceptorsFromDi()),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
   ],
 });
 

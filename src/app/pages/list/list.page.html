@@ -6,12 +6,14 @@
 
 <ion-content>
   <ion-list *ngIf="places.length > 0; else empty">
-    <ion-item *ngFor="let place of places" (click)="viewPlace(place)">
+    <ion-item *ngFor="let place of places">
       <ion-label>
         <h2>{{ place.name }}</h2>
         <p>{{ place.type }} • {{ place.adresse }}</p>
-        <ion-note *ngIf="place.averageRating">⭐ {{ place.averageRating }}/5</ion-note>
       </ion-label>
+      <ion-button fill="outline" slot="end" (click)="viewPlace(place)">
+        Afficher
+      </ion-button>
     </ion-item>
   </ion-list>
 

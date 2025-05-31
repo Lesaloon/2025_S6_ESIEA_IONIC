@@ -9,16 +9,21 @@ import {
   IonNote,
   IonLabel,
   IonItem,
-  IonList, IonText } from '@ionic/angular/standalone';
+  IonList,
+  IonText,
+  IonButton,
+} from '@ionic/angular/standalone';
 import { Place } from 'src/app/interfaces/place';
 import { PlaceService } from 'src/app/services/place.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-list',
   templateUrl: './list.page.html',
   styleUrls: ['./list.page.scss'],
   standalone: true,
-  imports: [IonText, 
+  imports: [
+    IonText, 
     IonList,
     IonItem,
     IonLabel,
@@ -27,6 +32,7 @@ import { PlaceService } from 'src/app/services/place.service';
     IonHeader,
     IonTitle,
     IonToolbar,
+    IonButton,
     CommonModule,
     FormsModule,
   ],
@@ -34,20 +40,23 @@ import { PlaceService } from 'src/app/services/place.service';
 export class ListPage implements OnInit {
   places: Place[] = [];
 
-  constructor(private placeService: PlaceService) {}
+  constructor(
+    private placeService: PlaceService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.loadPlaces();
   }
 
   loadPlaces() {
-    this.placeService.getValidatedPlaces().subscribe({
+    this.placeService.getPlaces().subscribe({
       next: (places) => (this.places = places),
       error: (err) => console.error('Failed to load places', err),
     });
   }
 
   viewPlace(place: Place) {
-    console.log('Viewing', place); // Replace with navigation to details
+    this.router.navigate(['/place', place.id]);
   }
 }
