@@ -7,6 +7,7 @@ import { LoginPage } from './pages/login/login.page';
 import { AuthGuard } from './guards/auth-guard.guard';
 import { PlacePage } from './pages/place/place.page';
 import { LogoutPage } from './pages/logout/logout.page';
+import { NewPlacePage } from './pages/new-place/new-place.page';
 
 export const routes: Routes = [
   { path: 'login', component: LoginPage },
@@ -32,5 +33,6 @@ export const routes: Routes = [
   },
   { path: 'place/:id', component: PlacePage },
   { path: 'logout', component: LogoutPage },
+  { path: 'new-place/:lat/:lng', component: NewPlacePage },
   { path: '**', redirectTo: 'tabs/map' },
 ];
