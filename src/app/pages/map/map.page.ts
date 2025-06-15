@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -23,6 +23,7 @@ import { ActionSheetController } from '@ionic/angular';
   templateUrl: './map.page.html',
   styleUrls: ['./map.page.scss'],
   standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     IonSpinner,
     IonContent,
@@ -91,7 +92,7 @@ export class MapPage implements OnInit {
               await this.mobileMap.addMarker({
                 coordinate: { lat: place.latitude, lng: place.longitude },
                 title: place.name,
-                onClick: () => this.onMarkerClick(place)
+                onClick: () => this.onMarkerClick(place),
               });
             }
           }
@@ -104,26 +105,25 @@ export class MapPage implements OnInit {
 
   async ngAfterViewInit() {
     // Add markers after the view is initialized
-	if (this.isMobile && this.mobileMap) {
-	  await this.addMarkers();
-	}
-	
+    if (this.isMobile && this.mobileMap) {
+      await this.addMarkers();
+    }
   }
 
   async addMarkers() {
-	if (this.isMobile && this.mobileMap) {
-	  for (const place of this.places) {
-		if (place.latitude && place.longitude) {
-		  await this.mobileMap.addMarker({
-			coordinate: { lat: place.latitude, lng: place.longitude },
-			title: place.name,
-			onClick: () => this.onMarkerClick(place)
-		  });
-		}
-	  }
-	} else {
-	  // For web, markers are already set in the template
-	}
+    if (this.isMobile && this.mobileMap) {
+      for (const place of this.places) {
+        if (place.latitude && place.longitude) {
+          await this.mobileMap.addMarker({
+            coordinate: { lat: place.latitude, lng: place.longitude },
+            title: place.name,
+            onClick: () => this.onMarkerClick(place),
+          });
+        }
+      }
+    } else {
+      // For web, markers are already set in the template
+    }
   }
 
   onMarkerClick(place: Place) {
@@ -131,7 +131,7 @@ export class MapPage implements OnInit {
     this.router.navigate(['/place', place.id]);
   }
 
-  async handleMapClick(event: google.maps.MapMouseEvent) {
+  async handleMapClick(event: google.maps.MapMouseEvent | any) {
     if (!event.latLng) {
       return;
     }
@@ -149,9 +149,9 @@ export class MapPage implements OnInit {
         },
         {
           text: 'Cancel',
-          role: 'cancel'
-        }
-      ]
+          role: 'cancel',
+        },
+      ],
     });
     await actionSheet.present();
   }
