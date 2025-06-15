@@ -87,7 +87,7 @@ export class LoginPage implements OnInit {
     };
 
     this.auth.login(payload).subscribe({
-      next: () => this.router.navigate(['/tabs']),
+      next: () => this.router.navigate(['/tabs/map']),
       error: (err) => {
         this.error = err.error?.error || 'Erreur de connexion';
       },

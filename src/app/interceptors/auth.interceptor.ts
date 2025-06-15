@@ -7,11 +7,13 @@ import {
 } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
     constructor(
-		private authService: AuthService
+		private authService: AuthService,
+		private router: Router  // added router injection
 	) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -39,7 +41,12 @@ export class AuthInterceptor implements HttpInterceptor {
         }
         handled.subscribe({
           next: value => observer.next(value),
-          error: err => observer.error(err),
+          error: err => {
+            if (err.status === 401) {
+              this.router.navigate(['/logout'], { queryParams: { expired: true } });
+            }
+            observer.error(err);
+          },
           complete: () => observer.complete()
         });
       });

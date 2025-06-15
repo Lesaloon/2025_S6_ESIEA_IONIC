@@ -60,7 +60,7 @@ export class HttpClientService {
         .then(toast => toast.present());
     }
     if (msg === 'Expired JWT Token') {
-      this.router.navigate(['/logout?expired=true']);
+      this.router.navigate(['/logout'], { queryParams: { expired: true } });
       console.warn('JWT Token expired, redirecting to logout.');
     }
     console.error(data);
