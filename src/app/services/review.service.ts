@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClientService } from './http-client.service';
 import { Observable } from 'rxjs';
 
 interface Review {
@@ -18,18 +18,18 @@ interface Review {
 export class ReviewService {
   private baseUrl = 'http://localhost:8000/api/reviews';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClientService) {}
 
   getMyReviews(): Observable<Review[]> {
-    return this.http.get<Review[]>(`${this.baseUrl}`);
+    return this.http.get<Review[]>(`/reviews`) as Observable<Review[]>;
   }
 
   getAllReviews(): Observable<Review[]> {
-    return this.http.get<Review[]>(`${this.baseUrl}`);
+    return this.http.get<Review[]>(`/reviews`) as Observable<Review[]>;
   }
 
   getReview(id: number): Observable<Review> {
-    return this.http.get<Review>(`${this.baseUrl}/${id}`);
+    return this.http.get<Review>(`/reviews/${id}`) as Observable<Review>;
   }
 
   createReview(review: {
@@ -37,18 +37,20 @@ export class ReviewService {
     commentaire: string;
     rating: number;
   }): Observable<any> {
-    return this.http.post(this.baseUrl, review);
+    return this.http.post(`/reviews`, review);
   }
 
   updateReview(id: number, update: Partial<Review>): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${id}`, update);
+    return this.http.put(`/reviews/${id}`, update);
   }
 
   deleteReview(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/${id}`);
+    return this.http.delete(`/reviews/${id}`);
   }
 
   getReviewsForPlace(placeId: number): Observable<Review[]> {
-    return this.http.get<Review[]>(`${this.baseUrl}/place/${placeId}`);
+    return this.http.get<Review[]>(`/reviews/place/${placeId}`) as Observable<
+      Review[]
+    >;
   }
 }

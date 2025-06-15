@@ -43,9 +43,7 @@ export class GeolocationService {
     }
   }
 
-  async watchPosition(
-    callback: (position: Position) => void
-  ): Promise<string> {
+  async watchPosition(callback: (position: Position) => void): Promise<string> {
     return Geolocation.watchPosition({}, (position, err) => {
       if (err) {
         console.error('Watch position error:', err);

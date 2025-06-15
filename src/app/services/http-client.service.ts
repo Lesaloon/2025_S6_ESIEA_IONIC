@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { ApiResponse } from '../interfaces/api-response';
 import { map, Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
+import { ToastController } from '@ionic/angular';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -11,9 +12,10 @@ import { catchError } from 'rxjs/operators';
 })
 export class HttpClientService {
   constructor(
-	private http: HttpClient,
-	private router: Router,
-) {}
+    private http: HttpClient,
+    private router: Router,
+    private toastController: ToastController
+  ) {}
   static URL = 'http://localhost:8000/api';
   header = {};
 
@@ -49,14 +51,18 @@ export class HttpClientService {
       .pipe(catchError((err) => of(this.handleError(err))));
   }
 
+  /** Handle HTTP errors, show toast if message present */
   handleError(data: any) {
-	if ((data as any).error.message == "Expired JWT Token") {
-	  // Handle expired token case
-	  // Optionally, you can redirect to login or show a message
-	  this.router.navigate(['/logout?expired=true']);
-	  console.warn('JWT Token expired, redirecting to logout.');
-	  return [];
-	}
+    const msg = data.error?.message;
+    if (msg) {
+      this.toastController
+        .create({ message: msg, duration: 3000, color: 'danger' })
+        .then(toast => toast.present());
+    }
+    if (msg === 'Expired JWT Token') {
+      this.router.navigate(['/logout?expired=true']);
+      console.warn('JWT Token expired, redirecting to logout.');
+    }
     console.error(data);
     return [];
   }

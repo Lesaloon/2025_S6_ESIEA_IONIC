@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { ToastController } from '@ionic/angular';
+import { catchError } from 'rxjs/operators';
+import { throwError, Observable } from 'rxjs';
 
 export interface User {
   id: number;
@@ -17,10 +19,15 @@ export interface User {
 export class UserService {
   private baseUrl = 'http://localhost:8000/api/users';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private toastController: ToastController
+  ) {}
 
   getCurrentUser(): Observable<{ success: boolean; user: User }> {
-    return this.http.get<{ success: boolean; user: User }>(`${this.baseUrl}/me`);
+    return this.http.get<{ success: boolean; user: User }>(
+      `${this.baseUrl}/me`
+    );
   }
 
   updateCurrentUser(data: {

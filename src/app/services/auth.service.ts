@@ -39,10 +39,10 @@ export class AuthService {
 
   async getToken(): Promise<string | null> {
     await Preferences.get({ key: this.tokenKey }).then(({ value }) => {
-	  this.authToken = value;
-	  this.isLoggedInSubject.next(!!value);
-	});
-	return this.authToken;
+      this.authToken = value;
+      this.isLoggedInSubject.next(!!value);
+    });
+    return this.authToken;
   }
 
   isLoggedIn(): Observable<boolean> {
