@@ -2,11 +2,18 @@
   <ion-toolbar>
     <ion-title>Liste des Lieux</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      [(ngModel)]="searchTerm"
+      (ionInput)="filterPlaces()"
+      placeholder="Rechercher un lieu">
+    </ion-searchbar>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-list *ngIf="places.length > 0; else empty">
-    <ion-item *ngFor="let place of places">
+  <ion-list *ngIf="filteredPlaces && filteredPlaces.length > 0; else empty">
+    <ion-item *ngFor="let place of filteredPlaces">
       <ion-label>
         <h2>{{ place.name }}</h2>
         <p>{{ place.type }} • {{ place.adresse }}</p>

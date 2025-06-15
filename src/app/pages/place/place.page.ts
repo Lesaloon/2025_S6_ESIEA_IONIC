@@ -97,6 +97,7 @@ export class PlacePage implements OnInit {
     this.reviewService.getReviewsForPlace(this.place.id).subscribe({
       next: (reviews) => {
         this.reviews = reviews;
+        // reviews loaded
         if (reviews.length > 0) {
           const total = reviews.reduce((sum, review) => sum + review.rating, 0);
           // update computedAverageRating using the reviews
