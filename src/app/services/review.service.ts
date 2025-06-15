@@ -25,7 +25,7 @@ export class ReviewService {
   }
 
   getAllReviews(): Observable<Review[]> {
-    return this.http.get<Review[]>(`${this.baseUrl}/`);
+    return this.http.get<Review[]>(`${this.baseUrl}`);
   }
 
   getReview(id: number): Observable<Review> {
