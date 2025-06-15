@@ -9,7 +9,7 @@ interface Review {
   commentaire: string;
   rating: number;
   createAt?: string;
-  place_id?: number; // for POST body
+  place_id?: number;
 }
 
 @Injectable({

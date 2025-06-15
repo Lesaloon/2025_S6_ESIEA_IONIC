@@ -31,8 +31,12 @@ export const routes: Routes = [
       },
     ],
   },
-  { path: 'place/:id', component: PlacePage },
+  {
+    path: 'place/:id',
+    canActivate: [AuthGuard],
+    component: PlacePage,
+  },
   { path: 'logout', component: LogoutPage },
-  { path: 'new-place/:lat/:lng', component: NewPlacePage },
+  { path: 'new-place/:lat/:lng', canActivate: [AuthGuard], component: NewPlacePage },
   { path: '**', redirectTo: 'tabs/map' },
 ];

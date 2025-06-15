@@ -29,7 +29,7 @@ export class PlaceService {
    * Add a new place
    */
   addPlace(payload: PlacePayload): Observable<Place> {
-    return this.http.post(``, payload)as Observable<Place>;
+    return this.http.post(`/places`, payload) as Observable<Place>;
   }
 
   /**

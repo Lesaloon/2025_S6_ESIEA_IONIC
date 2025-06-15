@@ -8,13 +8,12 @@ import {
   IonToolbar,
   IonSpinner,
 } from '@ionic/angular/standalone';
-import { GoogleMapsModule, MapInfoWindow } from '@angular/google-maps';
+import { GoogleMap as CapacitorGoogleMap } from '@capacitor/google-maps';
 import { Place } from 'src/app/interfaces/place';
 import { PlaceService } from 'src/app/services/place.service';
-import { ScriptLoaderService } from 'src/app/services/ScriptLoader.service';
 import { Capacitor } from '@capacitor/core';
-import { GoogleMap as CapacitorGoogleMap } from '@capacitor/google-maps';
 import { Geolocation } from '@capacitor/geolocation';
+import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import { ActionSheetController } from '@ionic/angular';
 
@@ -31,128 +30,74 @@ import { ActionSheetController } from '@ionic/angular';
     IonToolbar,
     CommonModule,
     FormsModule,
-    GoogleMapsModule,
   ],
 })
 export class MapPage implements OnInit {
   places: Place[] = [];
-  markers: Place[] = [];
-  center = { lat: 43.71032, lng: -1.05366 }; // Default to Dax (web) or will be updated on mobile
+  center = { lat: 43.71032, lng: -1.05366 };
   zoom = 14;
   isLoading = true;
-  isMobile = false;
-  mobileMap: any; // Instance of Capacitor Google Map
+  private map!: CapacitorGoogleMap;
+  private markerMap: Map<string, Place> = new Map();
 
   constructor(
     private placeService: PlaceService,
-    private scriptLoader: ScriptLoaderService,
     private router: Router,
     private actionSheetController: ActionSheetController
   ) {}
 
-  async ngOnInit() {
-    // Detect platform
-    this.isMobile = Capacitor.getPlatform() !== 'web';
+  async ngOnInit() {}
 
-    if (this.isMobile) {
-      // Use geolocation on mobile
-      try {
-        const pos = await Geolocation.getCurrentPosition();
-        this.center = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        // Create Capacitor map on div with id "mobile-map"
-        this.mobileMap = await CapacitorGoogleMap.create({
-          id: 'mobile-map',
-          apiKey: 'YOUR_API_KEY', // Replace with your actual API key
-          config: {
-            center: this.center,
-            zoom: this.zoom,
-          },
-          element: document.getElementById('mobile-map') as HTMLElement,
-        });
-      } catch (error) {
-        console.error('Geolocation or map creation failed', error);
-      }
-    } else {
-      // Load Google Maps script for web
-      try {
-        await this.scriptLoader.loadGoogleMaps();
-      } catch (error) {
-        console.error('Failed to load Google Maps script', error);
-      }
-    }
-
-    this.placeService.getPlaces().subscribe({
-      next: async (places) => {
-        this.places = places;
-        this.markers = places; // For the web view markers in the template
-        if (this.isMobile && this.mobileMap) {
-          for (const place of places) {
-            if (place.latitude && place.longitude) {
-              await this.mobileMap.addMarker({
-                coordinate: { lat: place.latitude, lng: place.longitude },
-                title: place.name,
-                onClick: () => this.onMarkerClick(place)
-              });
-            }
-          }
+  // Initialize map after the view has fully entered
+  async ionViewDidEnter() {
+    try {
+      const pos = await Geolocation.getCurrentPosition();
+      this.center = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      this.map = await CapacitorGoogleMap.create({
+        id: 'map',
+        apiKey: 'YOUR_API_KEY', // Replace with your actual API key
+        config: { center: this.center, zoom: this.zoom },
+        element: document.getElementById('map') as HTMLElement,
+      });
+      // Load places and add markers
+      const places = await firstValueFrom(this.placeService.getPlaces());
+      for (const place of places) {
+        if (place.latitude && place.longitude) {
+          const markerId: string = await this.map.addMarker({
+            coordinate: { lat: place.latitude, lng: place.longitude },
+            title: place.name,
+          });
+          this.markerMap.set(markerId, place);
         }
-        this.isLoading = false;
-      },
-      error: (err) => console.error('Failed to load places', err),
-    });
-  }
-
-  async ngAfterViewInit() {
-    // Add markers after the view is initialized
-	if (this.isMobile && this.mobileMap) {
-	  await this.addMarkers();
-	}
-	
-  }
-
-  async addMarkers() {
-	if (this.isMobile && this.mobileMap) {
-	  for (const place of this.places) {
-		if (place.latitude && place.longitude) {
-		  await this.mobileMap.addMarker({
-			coordinate: { lat: place.latitude, lng: place.longitude },
-			title: place.name,
-			onClick: () => this.onMarkerClick(place)
-		  });
-		}
-	  }
-	} else {
-	  // For web, markers are already set in the template
-	}
+      }
+      // Marker click listener
+      await this.map.setOnMarkerClickListener(({ markerId }) => {
+        const place = this.markerMap.get(markerId);
+        if (place) this.onMarkerClick(place);
+      });
+      // Map click listener for adding new place
+      await this.map.setOnMapClickListener(async ({ latitude, longitude }) => {
+        const actionSheet = await this.actionSheetController.create({
+          header: 'Options',
+          buttons: [
+            {
+              text: 'Crée un nouvel etablisement',
+              handler: () => this.router.navigate(['/new-place', latitude, longitude]),
+            },
+            { text: 'Cancel', role: 'cancel' },
+          ],
+        });
+        await actionSheet.present();
+      });
+    } catch (error) {
+      console.error('Map initialization failed', error);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   onMarkerClick(place: Place) {
     // Navigate to the place page using place id
     this.router.navigate(['/place', place.id]);
-  }
-
-  async handleMapClick(event: google.maps.MapMouseEvent) {
-    if (!event.latLng) {
-      return;
-    }
-    const lat = event.latLng.lat();
-    const lng = event.latLng.lng();
-
-    const actionSheet = await this.actionSheetController.create({
-      header: 'Options',
-      buttons: [
-        {
-          text: 'Crée un nouvel etablisement',
-          handler: () => {
-            this.router.navigate(['/new-place', lat, lng]);
-          },
-        },
-        {
-          text: 'Cancel',
-          role: 'cancel'
-        }
-      ]
-    });
-    await actionSheet.present();
   }
 }

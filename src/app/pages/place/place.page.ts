@@ -18,7 +18,12 @@ import {
   IonTextarea,
   IonButton,
   IonToast,
-  IonText, IonListHeader, IonList, IonBackButton, IonButtons } from '@ionic/angular/standalone';
+  IonText,
+  IonListHeader,
+  IonList,
+  IonBackButton,
+  IonButtons,
+} from '@ionic/angular/standalone';
 import { PlaceService } from 'src/app/services/place.service';
 import { Place } from 'src/app/interfaces/place';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -29,7 +34,11 @@ import { ReviewService } from 'src/app/services/review.service';
   templateUrl: './place.page.html',
   styleUrls: ['./place.page.scss'],
   standalone: true,
-  imports: [IonButtons, IonBackButton, IonList, IonListHeader, 
+  imports: [
+    IonButtons,
+    IonBackButton,
+    IonList,
+    IonListHeader,
     IonText,
     IonContent,
     IonHeader,

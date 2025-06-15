@@ -22,10 +22,6 @@ import { RouterLink } from '@angular/router';
     IonTabBar,
     IonIcon,
     IonTabs,
-    IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
     CommonModule,
     FormsModule,
 	RouterLink

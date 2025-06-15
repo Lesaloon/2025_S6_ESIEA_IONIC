@@ -19,6 +19,9 @@ import {
 } from '@angular/common/http';
 import { AuthInterceptor } from './app/interceptors/auth.interceptor';
 import { addIcons } from 'ionicons';
+
+
+
 bootstrapApplication(AppComponent, {
   providers: [
     {

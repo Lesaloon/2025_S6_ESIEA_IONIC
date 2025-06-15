@@ -5,17 +5,10 @@
 </ion-header>
 
 <ion-content>
+	<!-- Map container always available for initialization -->
+	<div id="map" class="map-container"></div>
+	<!-- Loading spinner overlay -->
 	<ng-container *ngIf="isLoading">
-		<ion-spinner name="crescent" class="ion-padding"></ion-spinner>
-	</ng-container>
-	<ng-container *ngIf="!isLoading">
-		<ng-container *ngIf="!isMobile">
-			<google-map [center]="center" [zoom]="zoom" height="100%" width="100%" (mapClick)="handleMapClick($event)">
-				<map-marker *ngFor="let marker of markers" [position]="{lat: marker.latitude ?? 0, lng: marker.longitude ?? 0}" [title]="marker.name" (mapClick)="onMarkerClick(marker)"></map-marker>
-			</google-map>
-		</ng-container>
-		<ng-container *ngIf="isMobile">
-			<div id="mobile-map" style="height: 100%; width: 100%;"></div>
-		</ng-container>
+		<ion-spinner name="crescent" class="ion-padding spinner-overlay"></ion-spinner>
 	</ng-container>
 </ion-content>
