@@ -1,11 +1,43 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Créer un nouvel établissement</ion-title>
-  </ion-toolbar>
+	<ion-toolbar>
+		<ion-title>Créer un nouvel établissement</ion-title>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <p>Latitude: {{ lat }}</p>
-  <p>Longitude: {{ lng }}</p>
-  <!-- Add your form fields to create a new place -->
+	<form [formGroup]="placeForm" (ngSubmit)="onSubmit()">
+		<ion-item>
+			<ion-label position="floating">Nom</ion-label>
+			<ion-input formControlName="name" required></ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label position="floating">Type</ion-label>
+			<ion-select formControlName="type" required>
+				<ion-select-option value="Restaurant">Restaurant</ion-select-option>
+				<ion-select-option value="Café">Café</ion-select-option>
+				<ion-select-option value="Bibliothèque">Bibliothèque</ion-select-option>
+				<!-- Ajoutez d'autres types si nécessaire -->
+			</ion-select>
+		</ion-item>
+		<ion-item>
+			<ion-label position="floating">Adresse</ion-label>
+			<ion-input formControlName="adresse" required></ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label position="floating">Description</ion-label>
+			<ion-textarea formControlName="description"></ion-textarea>
+		</ion-item>
+		<ion-item>
+			<ion-label>Latitude</ion-label>
+			<ion-input [value]="lat" readonly></ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label>Longitude</ion-label>
+			<ion-input [value]="lng" readonly></ion-input>
+		</ion-item>
+		<ion-button expand="full" type="submit" [disabled]="placeForm.invalid || loading">
+			<ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+			<span *ngIf="!loading">Créer</span>
+		</ion-button>
+	</form>
 </ion-content>
