@@ -18,9 +18,8 @@ export class AuthService {
 
   login(payload: LoginPayload): Observable<{ token: string }> {
     return this.http.post(`/login`, payload).pipe(
-      tap((response: any) => {
-        console.log('Login response:', response);
-        Preferences.set({ key: this.tokenKey, value: response.token });
+      tap(async (response: any) => {
+        await Preferences.set({ key: this.tokenKey, value: response.token });
         this.authToken = response.token;
         this.isLoggedInSubject.next(true);
       })
@@ -31,15 +30,19 @@ export class AuthService {
     return this.http.post(`/register`, payload);
   }
 
-  logout(): void {
-    Preferences.remove({ key: this.tokenKey });
+  async logout(): Promise<void> {
+    await Preferences.remove({ key: this.tokenKey });
     this.authToken = null;
     this.isLoggedInSubject.next(false);
     this.router.navigate(['/login']);
   }
 
-  getToken(): string | null {
-    return this.authToken;
+  async getToken(): Promise<string | null> {
+    await Preferences.get({ key: this.tokenKey }).then(({ value }) => {
+	  this.authToken = value;
+	  this.isLoggedInSubject.next(!!value);
+	});
+	return this.authToken;
   }
 
   isLoggedIn(): Observable<boolean> {
