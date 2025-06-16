@@ -2,19 +2,22 @@ import { AuthService } from 'src/app/services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApiResponse } from '../interfaces/api-response';
-import { map, Observable, of } from 'rxjs';
+import { Observable, of, from, throwError } from 'rxjs';
+import { switchMap, tap, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-import { catchError } from 'rxjs/operators';
+import { NetworkService } from './network.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HttpClientService {
+  private cache = new Map<string, any>();
   constructor(
     private http: HttpClient,
     private router: Router,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private networkService: NetworkService
   ) {}
   static URL = 'http://localhost:8000/api';
   header = {};
@@ -23,8 +26,27 @@ export class HttpClientService {
     if (!url.startsWith('/')) {
       url += '/'; // Ensure URL ends with a slash
     }
-    return this.http.get<T | T[]>(HttpClientService.URL + url, { headers: this.header })
-      .pipe(catchError((err) => of(this.handleError(err))));
+    const fullUrl = HttpClientService.URL + url;
+    return from(this.networkService.getCurrentNetworkStatus()).pipe(
+      switchMap(connected => {
+        if (connected) {
+          return this.http.get<T | T[]>(fullUrl, { headers: this.header }).pipe(
+            tap(data => this.cache.set(fullUrl, data)),
+            catchError(err => of(this.handleError(err)))
+          );
+        } else {
+          const cached = this.cache.get(fullUrl);
+          if (cached !== undefined) {
+            return of(cached as T | T[]);
+          } else {
+            this.toastController
+              .create({ message: 'No internet connection', duration: 3000, color: 'warning' })
+              .then(toast => toast.present());
+            return throwError(() => new Error('No internet connection and no cached data'));
+          }
+        }
+      })
+    );
   }
 
   post<T>(url: string, data: any): Observable<T | T[]> {
