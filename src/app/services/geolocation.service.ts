@@ -4,6 +4,7 @@ import {
   Position,
   PermissionStatus,
 } from '@capacitor/geolocation';
+import { Capacitor } from '@capacitor/core';
 
 @Injectable({
   providedIn: 'root',
@@ -25,6 +26,27 @@ export class GeolocationService {
 
   async getCurrentPosition(): Promise<Position | null> {
     try {
+      // Use browser geolocation on web
+      if (Capacitor.getPlatform() === 'web' && navigator.geolocation) {
+        const webPos = await new Promise<Position>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(
+            (pos) =>
+              resolve({
+                coords: {
+                  latitude: pos.coords.latitude,
+                  longitude: pos.coords.longitude,
+                  accuracy: pos.coords.accuracy,
+                  altitude: pos.coords.altitude ?? undefined,
+                },
+                timestamp: pos.timestamp,
+              } as Position),
+            (err) => reject(err),
+            { enableHighAccuracy: true, timeout: 10000 }
+          );
+        });
+        console.log('Web current position:', webPos);
+        return webPos;
+      }
       const permission = await this.checkPermissions();
       if (permission.location !== 'granted') {
         await this.requestPermissions();

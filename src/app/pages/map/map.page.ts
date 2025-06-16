@@ -17,6 +17,7 @@ import { GoogleMap as CapacitorGoogleMap } from '@capacitor/google-maps';
 import { Geolocation } from '@capacitor/geolocation';
 import { Router } from '@angular/router';
 import { ActionSheetController } from '@ionic/angular';
+import { GeolocationService } from 'src/app/services/geolocation.service';
 
 @Component({
   selector: 'app-map',
@@ -48,11 +49,11 @@ export class MapPage implements OnInit {
     private placeService: PlaceService,
     private scriptLoader: ScriptLoaderService,
     private router: Router,
-    private actionSheetController: ActionSheetController
+    private actionSheetController: ActionSheetController,
+    private geolocationService: GeolocationService
   ) {}
 
   async ngOnInit() {
-    // Detect platform
     this.isMobile = Capacitor.getPlatform() !== 'web';
 
     if (this.isMobile) {
@@ -74,11 +75,15 @@ export class MapPage implements OnInit {
         console.error('Geolocation or map creation failed', error);
       }
     } else {
-      // Load Google Maps script for web
+      // Load Google Maps script for web and center map on user location
       try {
         await this.scriptLoader.loadGoogleMaps();
+        const pos = await this.geolocationService.getCurrentPosition();
+        if (pos) {
+          this.center = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        }
       } catch (error) {
-        console.error('Failed to load Google Maps script', error);
+        console.error('Failed to load Google Maps script or get location', error);
       }
     }
 
